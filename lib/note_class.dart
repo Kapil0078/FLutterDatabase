@@ -1,12 +1,12 @@
 class Note {
   final int? id;
-  final String title, contact, desc, date;
+  final String title, desc;
+  final DateTime date;
   final bool done;
 
   Note({
     this.id,
     required this.title,
-    required this.contact,
     required this.desc,
     required this.date,
     required this.done,
@@ -15,18 +15,16 @@ class Note {
   factory Note.fromJson(Map<String, dynamic> json) => Note(
         id: json["id"],
         title: json["title"],
-        contact: json["contact"],
         desc: json["desc"],
-        date: json["date"],
+        date: DateTime.parse(json["date"]),
         done: json["done"] == 1 ? true : false,
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
-        "contact": contact,
         "desc": desc,
-        "date": date,
+        "date": date.toIso8601String(),
         "done": done ? 1 : 0,
       };
 }

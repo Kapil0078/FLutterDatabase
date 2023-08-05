@@ -46,7 +46,6 @@ class NoteDatabase {
     CREATE TABLE $_tableName (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
-      contact TEXT NOT NULL,
       desc TEXT NOT NULL,
       date TEXT NOT NULL,
       done BOOLEAN NOT NULL
