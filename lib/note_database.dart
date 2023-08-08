@@ -62,6 +62,22 @@ class NoteDatabase {
     return id;
   }
 
+  // single note
+  Future<Note?> singleNote(int id) async {
+    final db = await instance.database;
+    final List<Map<String, dynamic>> notes = await db.query(
+      _tableName,
+      where: "id = ?",
+      whereArgs: [id],
+    );
+
+    if (notes.isNotEmpty) {
+      return Note.fromJson(notes.first);
+    } else {
+      return null;
+    }
+  }
+
   // ReadData
   Future<List<Note>> readNotes() async {
     final db = await instance.database;

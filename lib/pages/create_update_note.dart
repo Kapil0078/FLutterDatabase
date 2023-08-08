@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:database_flutter/component/loading_component.dart';
 import 'package:database_flutter/component/my_text_form_field.dart';
 import 'package:database_flutter/constant.dart';
@@ -9,7 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CreateUpdateNote extends StatefulWidget {
-  const CreateUpdateNote({super.key});
+  final int? noteID;
+  const CreateUpdateNote({super.key, this.noteID});
 
   @override
   State<CreateUpdateNote> createState() => _CreateUpdateNoteState();
@@ -22,12 +25,35 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
   final _formKey = GlobalKey<FormState>();
   bool isDone = false;
   DateTime? doneDate;
+  bool btnLoading = false;
   bool isLoading = false;
 
   // controller
   final titleController = TextEditingController();
   final descController = TextEditingController();
   final dateController = TextEditingController();
+
+  @override
+  void initState() {
+    if (widget.noteID != null) {
+      _getSingleNote();
+    }
+    super.initState();
+  }
+
+  Future<void> _getSingleNote() async {
+    setState(() => isLoading = true);
+
+    final note = await database.singleNote(widget.noteID!);
+    titleController.text = note?.title ?? "";
+    descController.text = note?.desc ?? "";
+    dateController.text = note?.date != null ? formatWithYear(note!.date) : "";
+    doneDate = note?.date;
+    isDone = note?.done ?? false;
+
+    setState(() => isLoading = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +61,7 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
         title: const Text("Create TODO"),
       ),
       floatingActionButton: ActionChip(
-        label: isLoading ? const LoadingComponent() : const Text("Save"),
+        label: btnLoading ? const LoadingComponent() : const Text("Save"),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         avatar: const Icon(
           Icons.save,
@@ -51,9 +77,13 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
               done: isDone,
             );
 
-            setState(() => isLoading = true);
+            setState(() => btnLoading = true);
             await database.createNote(note);
-            setState(() => isLoading = false);
+            setState(() => btnLoading = false);
+
+            Navigator.pop(
+              context,
+            );
           }
         },
       ),
@@ -134,6 +164,7 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 80),
               ],
             ),
           ),
