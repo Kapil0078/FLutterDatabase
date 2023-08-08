@@ -19,6 +19,7 @@ class CreateUpdateNote extends StatefulWidget {
 }
 
 class _CreateUpdateNoteState extends State<CreateUpdateNote> {
+  bool isUpdate = false;
   // database
   final database = NoteDatabase.instance;
   // variables
@@ -36,6 +37,7 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
   @override
   void initState() {
     if (widget.noteID != null) {
+      isUpdate = true;
       _getSingleNote();
     }
     super.initState();
@@ -61,7 +63,7 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
         title: const Text("Create TODO"),
       ),
       floatingActionButton: ActionChip(
-        label: btnLoading ? const LoadingComponent() : const Text("Save"),
+        label: btnLoading ? const LoadingComponent() :  Text( isUpdate ? "Update":"Save"),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         avatar: const Icon(
           Icons.save,
@@ -71,6 +73,7 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
           if (_formKey.currentState != null &&
               _formKey.currentState!.validate()) {
             final note = Note(
+              id: widget.noteID ,
               title: titleController.text.trim(),
               desc: descController.text.trim(),
               date: doneDate!,
@@ -78,7 +81,14 @@ class _CreateUpdateNoteState extends State<CreateUpdateNote> {
             );
 
             setState(() => btnLoading = true);
-            await database.createNote(note);
+
+
+            if(isUpdate){
+              await database.updateNote(note);
+            } else{
+              await database.createNote(note);
+            }
+
             setState(() => btnLoading = false);
 
             Navigator.pop(

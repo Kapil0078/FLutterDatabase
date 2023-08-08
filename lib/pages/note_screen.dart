@@ -25,7 +25,7 @@ class _NoteScreenState extends State<NoteScreen> {
     super.initState();
   }
 
-  void _getNote() async {
+  Future<void> _getNote() async {
     setState(() => isLoading = true);
     notes = await database.readNotes();
     setState(() => isLoading = false);
@@ -79,7 +79,7 @@ class _NoteScreenState extends State<NoteScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "${note.title} ${note.id}",
+                              note.title,
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
@@ -102,6 +102,8 @@ class _NoteScreenState extends State<NoteScreen> {
                                               CreateUpdateNote(noteID: note.id),
                                         ),
                                       );
+
+                                      _getNote();
                                     },
                                     icon: const Icon(
                                       Icons.edit,
@@ -115,6 +117,8 @@ class _NoteScreenState extends State<NoteScreen> {
                                     onPressed: () async {
                                       await database.deleteNote(note.id!);
                                       _getNote();
+
+
                                     },
                                     icon: const Icon(
                                       Icons.delete,

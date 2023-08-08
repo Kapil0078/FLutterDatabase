@@ -92,6 +92,7 @@ class NoteDatabase {
   // Update
   Future<int> updateNote(Note note) async {
     final db = await instance.database;
+    debugPrint('updateData -> ${note.toJson()}');
     final id = await db.update(
       _tableName,
       note.toJson(),
